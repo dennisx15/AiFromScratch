@@ -31,3 +31,9 @@ class Dense(Layer):
         self.dW = self.input.T @ grad_output#-> Gradient of loss w.r.t weights (dL/dW)
         self.db = grad_output.sum(axis=0, keepdims=True)
         return grad_output @ self.W.T
+
+    def parameters(self):
+        return [
+            (self.W, self.dW),
+            (self.b, self.db)
+        ]

@@ -3,6 +3,9 @@ from nn.losses.mse import MSE
 
 
 def test_mse_forward():
+    """
+    Function to test MSE forward pass
+    """
     mse = MSE()
 
     y_pred = np.array([2.0])
@@ -15,7 +18,9 @@ def test_mse_forward():
     assert np.isclose(loss, expected)
 
 def test_mse_backward():
-
+    """
+    Function to test MSE backward pass
+    """
     mse = MSE()
 
     y_pred = np.array([2.0])
@@ -30,6 +35,9 @@ def test_mse_backward():
 
 
 def test_mse_batch():
+    """
+    Function to test MSE forward and backward pass with a batch
+    """
     mse = MSE()
 
     y_pred = np.array([2.0, 3.0])
