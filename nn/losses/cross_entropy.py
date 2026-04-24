@@ -1,38 +1,35 @@
 from .base import Loss
+import numpy as np
 
-class CrossEntropy(Loss):
-    """
-    Cross-Entropy loss for classification.
+class CrossEntropyLoss(Loss):
 
-    Typically used with probability outputs (e.g., after Softmax).
-    Measures how well predicted probability distributions match true labels.
-    """
-
-    def forward(self, y_pred, y_true):
+    def forward(self, logits, y_true):
         """
-        :param y_pred: np.ndarray
-            Predicted probabilities for each class.
-            Shape: (batch_size, num_classes)
-
-        :param y_true: np.ndarray
-            One-hot encoded true labels.
-            Shape: (batch_size, num_classes)
-
-        :return: float
-            Average cross-entropy loss.
+        :param logits: raw outputs (no softmax yet)
+        :param y_true: integer class labels
         """
-        self.y_pred = y_pred
+
+        # softmax inside loss
+        logits_shifted = logits - np.max(logits, axis=1, keepdims=True)
+        exp = np.exp(logits_shifted)
+        self.probs = exp / np.sum(exp, axis=1, keepdims=True)
+
         self.y_true = y_true
 
-        # TODO: implement cross-entropy
-        ...
+        batch_size = logits.shape[0]
+
+        # pick correct class probabilities
+        correct_probs = self.probs[np.arange(batch_size), y_true]
+
+        loss = -np.log(correct_probs).mean()
+
+        return loss
 
     def backward(self):
-        """
-        Compute gradient of cross-entropy loss.
+        batch_size = self.probs.shape[0]
 
-        :return: np.ndarray
-            Gradient dL/dy_pred.
-        """
-        # TODO: implement gradient
-        ...
+        grad = self.probs.copy()
+        grad[np.arange(batch_size), self.y_true] -= 1
+        grad /= batch_size
+
+        return grad
