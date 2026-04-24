@@ -40,7 +40,6 @@ class ReLU(Layer):
     Gradient of the loss with respect to this layer's output (dL/dY).
         :return: The gradient of the output vector after applying the relu activation function.
         """
-
         return grad_output * (self.input > 0).astype(float)
 
 class Swish(Layer):
