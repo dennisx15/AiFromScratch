@@ -14,3 +14,20 @@ class Dense(Layer):
         # Initialize weights
         self.W = np.random.randn(input_dim, output_dim) * 0.01
         self.b = np.zeros((1, output_dim))
+    def forward(self, X):
+        """
+        Forward pass: compute output from input
+        :param X: input to the layer
+        """
+        self.input = X
+        self.output = np.dot(X, self.W) + self.b
+        return self.output
+
+    def backward(self, grad_output):
+        """
+        Backward pass: compute gradient w.r.t input
+        :param grad_output: the gradient of the loss with respect to this layer’s output
+        """
+        self.dW = self.input.T @ grad_output#-> Gradient of loss w.r.t weights (dL/dW)
+        self.db = grad_output.sum(axis=0, keepdims=True)
+        return grad_output @ self.W.T
