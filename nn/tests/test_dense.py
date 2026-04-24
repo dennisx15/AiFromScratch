@@ -1,4 +1,4 @@
-import numpy as np
+from nn.backend import xp
 import pytest
 from nn.layers.dense import Dense
 
@@ -8,20 +8,20 @@ def test_dense_forward():
     """
     dense = Dense(3, 2)
 
-    dense.W = np.array([
+    dense.W = xp.array([
         [2, 1],
         [1, 1],
         [1, 1]
     ])
-    dense.b = np.array([[0, 0]])
+    dense.b = xp.array([[0, 0]])
 
-    X = np.array([[1, 1, 1]])
+    X = xp.array([[1, 1, 1]])
 
     output = dense.forward(X)
 
-    expected = np.array([[4, 3]])
+    expected = xp.array([[4, 3]])
 
-    assert np.array_equal(output, expected)
+    assert xp.array_equal(output, expected)
     assert output.shape == expected.shape
 
 def test_dense_backward():
@@ -30,33 +30,33 @@ def test_dense_backward():
     """
     dense = Dense(3, 2)
 
-    dense.W = np.array([
+    dense.W = xp.array([
         [2, 1],
         [1, 1],
         [1, 1]
     ])
-    dense.b = np.array([[0, 0]])
+    dense.b = xp.array([[0, 0]])
 
-    X = np.array([[1, 1, 1]])
+    X = xp.array([[1, 1, 1]])
     dense.forward(X)
 
-    grad_output = np.array([[2, 3]])
+    grad_output = xp.array([[2, 3]])
 
     grad_input = dense.backward(grad_output)
 
-    expected_dW = np.array([
+    expected_dW = xp.array([
         [2, 3],
         [2, 3],
         [2, 3]
     ])
 
-    expected_db = np.array([[2, 3]])
+    expected_db = xp.array([[2, 3]])
 
-    expected_dX = np.array([[7, 5, 5]])
+    expected_dX = xp.array([[7, 5, 5]])
 
-    assert np.array_equal(dense.dW, expected_dW)
-    assert np.array_equal(dense.db, expected_db)
-    assert np.array_equal(grad_input, expected_dX)
+    assert xp.array_equal(dense.dW, expected_dW)
+    assert xp.array_equal(dense.db, expected_db)
+    assert xp.array_equal(grad_input, expected_dX)
 
 def test_dense_forward_batch():
     """
@@ -64,26 +64,26 @@ def test_dense_forward_batch():
     """
     dense = Dense(3, 2)
 
-    dense.W = np.array([
+    dense.W = xp.array([
         [2, 1],
         [1, 1],
         [1, 1]
     ])
-    dense.b = np.array([[0, 0]])
+    dense.b = xp.array([[0, 0]])
 
-    X = np.array([
+    X = xp.array([
         [1, 1, 1],
         [2, 2, 2]
     ])#A batch of two inputs
 
     output = dense.forward(X)
 
-    expected = np.array([
+    expected = xp.array([
         [4, 3],
         [8, 6]
     ])
 
-    assert np.array_equal(output, expected)
+    assert xp.array_equal(output, expected)
     assert output.shape == expected.shape
 
 
@@ -93,40 +93,40 @@ def test_dense_backward_batch():
     """
     dense = Dense(3, 2)
 
-    dense.W = np.array([
+    dense.W = xp.array([
         [2, 1],
         [1, 1],
         [1, 1]
     ])
-    dense.b = np.array([[0, 0]])
+    dense.b = xp.array([[0, 0]])
 
-    X = np.array([
+    X = xp.array([
         [1, 1, 1],
         [2, 2, 2]
     ])
 
     dense.forward(X)
 
-    grad_output = np.array([
+    grad_output = xp.array([
         [2, 3],
         [1, 1]
     ])
 
     grad_input = dense.backward(grad_output)
 
-    expected_dW = np.array([
+    expected_dW = xp.array([
         [4, 5],
         [4, 5],
         [4, 5]
     ])
 
-    expected_db = np.array([[3, 4]])
+    expected_db = xp.array([[3, 4]])
 
-    expected_dX = np.array([
+    expected_dX = xp.array([
         [7, 5, 5],
         [3, 2, 2]
     ])
 
-    assert np.array_equal(dense.dW, expected_dW)
-    assert np.array_equal(dense.db, expected_db)
-    assert np.array_equal(grad_input, expected_dX)
+    assert xp.array_equal(dense.dW, expected_dW)
+    assert xp.array_equal(dense.db, expected_db)
+    assert xp.array_equal(grad_input, expected_dX)

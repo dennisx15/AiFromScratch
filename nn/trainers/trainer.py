@@ -1,4 +1,4 @@
-import numpy as np
+from nn.backend import xp
 
 class Trainer:
     """
@@ -37,7 +37,7 @@ class Trainer:
 
     def accuracy(self, X, y):
         logits = self.model.forward(X)
-        preds = np.argmax(logits, axis=1)
+        preds = xp.argmax(logits, axis=1)
         return (preds == y).mean()
 
     def fit(self, X, y, epochs, batch_size=None):
@@ -60,7 +60,7 @@ class Trainer:
         for epoch in range(epochs):
 
             #Shuffle data
-            indices = np.random.permutation(len(X))
+            indices = xp.random.permutation(len(X))
             X_shuffled = X[indices]
             y_shuffled = y[indices]
 

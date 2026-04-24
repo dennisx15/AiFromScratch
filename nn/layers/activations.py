@@ -1,5 +1,5 @@
 from .base import Layer
-import numpy as np
+from nn.backend import xp
 class Sigmoid(Layer):
     def __init__(self):
         super().__init__()
@@ -10,7 +10,7 @@ class Sigmoid(Layer):
     Input tensor of shape (batch_size, features).
         :return: The vector after applying the sigmoid activation function.
         """
-        self.output = 1/(1+np.exp(-X))
+        self.output = 1/(1+xp.exp(-X))
         return self.output
 
     def backward(self, grad_output):
@@ -32,7 +32,7 @@ class ReLU(Layer):
         :return: The vector after applying the relu activation function.
         """
         self.input = X
-        return np.maximum(0, X)
+        return xp.maximum(0, X)
 
     def backward(self, grad_output):
         """
@@ -53,7 +53,7 @@ class Swish(Layer):
         :return: The vector after applying the swish activation function.
         """
         self.input = X
-        self.sigmoid = 1 / (1 + np.exp(-X))
+        self.sigmoid = 1 / (1 + xp.exp(-X))
         return X * self.sigmoid
 
 

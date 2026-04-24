@@ -1,5 +1,5 @@
 from .base import Layer
-import numpy as np
+from nn.backend import xp
 class Dense(Layer):
     def __init__(self, input_dim, output_dim):
         """
@@ -12,8 +12,8 @@ class Dense(Layer):
         self.output_dim = output_dim
 
         # Initialize weights
-        self.W = np.random.randn(input_dim, output_dim) * 0.01
-        self.b = np.zeros((1, output_dim))
+        self.W = xp.random.randn(input_dim, output_dim) * 0.01
+        self.b = xp.zeros((1, output_dim))
     def forward(self, X):
         """
         Forward pass: compute output from input
