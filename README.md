@@ -1,6 +1,6 @@
 # AI From Scratch
 
-A neural network framework built from first principles using NumPy.
+A neural network framework built from first principles using NumPy/CuPy.
 This is an improved version of my original work, focused on readability, scalability, and following 
 overall good software design principles.
 
