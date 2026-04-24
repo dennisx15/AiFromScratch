@@ -7,19 +7,17 @@ class Model:
         self.layers = layers
 
     def forward(self, X):
-        """
-        Pass input through all layers sequentially.
-        """
-        ...
+        for layer in self.layers:
+            X = layer.forward(X)
+        return X
 
     def backward(self, grad):
-        """
-        Backpropagate gradient through layers in reverse order.
-        """
-        ...
+        for layer in reversed(self.layers):
+            grad = layer.backward(grad)
 
     def parameters(self):
-        """
-        Collect all parameters from all layers.
-        """
-        ...
+        params = []
+        for layer in self.layers:
+            if hasattr(layer, "parameters"):
+                params.extend(layer.parameters())
+        return params
