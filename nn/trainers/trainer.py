@@ -35,6 +35,11 @@ class Trainer:
 
         return loss
 
+    def accuracy(self, X, y):
+        logits = self.model.forward(X)
+        preds = np.argmax(logits, axis=1)
+        return (preds == y).mean()
+
     def fit(self, X, y, epochs, batch_size=None):
         """
         Train the model for multiple epochs.
@@ -77,7 +82,9 @@ class Trainer:
             losses.append(epoch_loss)
 
             #Logging
-            if epoch % 10 == 0:
-                print(f"Epoch {epoch}: loss = {epoch_loss:.4f}")
+            acc = self.accuracy(X, y)
+
+            if epoch % 1 == 0:
+                print(f"Epoch {epoch}: loss = {epoch_loss:.4f}, acc = {acc:.4f}")
 
         return losses
