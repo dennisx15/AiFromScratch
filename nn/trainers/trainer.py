@@ -1,3 +1,5 @@
+import numpy as np
+
 class Trainer:
     """
     Handles the training process of a model.
@@ -7,16 +9,6 @@ class Trainer:
     """
 
     def __init__(self, model, loss_fn, optimizer):
-        """
-        :param model: Model
-            The neural network to train.
-
-        :param loss_fn: Loss
-            Loss function used to compute error.
-
-        :param optimizer: Optimizer
-            Optimizer used to update parameters.
-        """
         self.model = model
         self.loss_fn = loss_fn
         self.optimizer = optimizer
@@ -24,15 +16,6 @@ class Trainer:
     def train_step(self, X, y):
         """
         Perform one training step (forward + backward + update).
-
-        :param X: np.ndarray
-            Input batch.
-
-        :param y: np.ndarray
-            Ground truth labels.
-
-        :return: float
-            Loss value for this batch.
         """
 
         # 1. Forward pass
@@ -52,16 +35,49 @@ class Trainer:
 
         return loss
 
-    def fit(self, X, y, epochs):
+    def fit(self, X, y, epochs, batch_size=None):
         """
         Train the model for multiple epochs.
 
         :param X: np.ndarray
         :param y: np.ndarray
         :param epochs: int
+        :param batch_size: int or None
+            If None, use full batch.
         """
-        for epoch in range(epochs):
-            loss = self.train_step(X, y)
 
-            # TODO: maybe print or log loss
-            ...
+        losses = []
+
+        # default: full batch
+        if batch_size is None:
+            batch_size = X.shape[0]
+
+        for epoch in range(epochs):
+
+            #Shuffle data
+            indices = np.random.permutation(len(X))
+            X_shuffled = X[indices]
+            y_shuffled = y[indices]
+
+            epoch_loss = 0
+            num_batches = 0
+
+            #Loop over batches
+            for i in range(0, len(X), batch_size):
+                X_batch = X_shuffled[i:i + batch_size]
+                y_batch = y_shuffled[i:i + batch_size]
+
+                loss = self.train_step(X_batch, y_batch)
+
+                epoch_loss += loss
+                num_batches += 1
+
+            #Average loss across batches
+            epoch_loss /= num_batches
+            losses.append(epoch_loss)
+
+            #Logging
+            if epoch % 10 == 0:
+                print(f"Epoch {epoch}: loss = {epoch_loss:.4f}")
+
+        return losses
