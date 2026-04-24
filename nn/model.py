@@ -21,3 +21,33 @@ class Model:
             if hasattr(layer, "parameters"):
                 params.extend(layer.parameters())
         return params
+
+    def save(self, path):
+        import numpy as np
+
+        params = self.parameters()
+
+        data = {}
+        for i, (param, _) in enumerate(params):
+            # convert to numpy if on GPU
+            try:
+                import cupy as cp
+                if isinstance(param, cp.ndarray):
+                    param = cp.asnumpy(param)
+            except:
+                pass
+
+            data[f"param_{i}"] = param
+
+        np.savez(path, **data)
+
+    def load(self, path):
+        import numpy as np
+        from nn.backend import xp
+
+        data = np.load(path)
+
+        params = self.parameters()
+
+        for i, (param, _) in enumerate(params):
+            param[:] = xp.array(data[f"param_{i}"])

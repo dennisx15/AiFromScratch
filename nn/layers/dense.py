@@ -14,6 +14,8 @@ class Dense(Layer):
         # Initialize weights
         self.W = xp.random.randn(input_dim, output_dim) * 0.01
         self.b = xp.zeros((1, output_dim))
+        self.dW = xp.zeros_like(self.W)
+        self.db = xp.zeros_like(self.b)
     def forward(self, X):
         """
         Forward pass: compute output from input
