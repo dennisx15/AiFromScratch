@@ -23,9 +23,9 @@ class MSE(Loss):
         """
         self.y_pred = y_pred
         self.y_true = y_true
+        self.output_grad = 2*(y_pred - y_true) / y_pred.size
 
-        # TODO: implement MSE formula
-        ...
+        return ((y_pred - y_true)**2).mean()
 
     def backward(self):
         """
@@ -35,5 +35,5 @@ class MSE(Loss):
             Gradient dL/dy_pred.
             Same shape as y_pred.
         """
-        # TODO: derive and implement gradient
-        ...
+        return self.output_grad
+
