@@ -19,4 +19,4 @@ overall good software design principles.
 * `training/`: Training loops and utilities
 
 ## Status
-In progress — currently implementing core layers and architecture
+In progress — currently supports training dense layers
