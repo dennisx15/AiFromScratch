@@ -20,7 +20,7 @@ class Dense(Layer):
         :param X: input to the layer
         """
         self.input = X
-        self.output = np.dot(X, self.W) + self.b
+        self.output = X @ self.W + self.b
         return self.output
 
     def backward(self, grad_output):
