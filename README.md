@@ -21,5 +21,5 @@ overall good software design principles.
 ## Status
 In progress — currently supports training dense layers
 
-- understand Adam
-- create tests for softmax
+## Running an example model
+navigate to examples and run train_mnist.py
