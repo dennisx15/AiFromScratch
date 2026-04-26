@@ -21,7 +21,6 @@ class SGD(Optimizer):
 
         :param params: list of (param, grad)
         """
-        # TODO:
         # loop through params
         # update each param using its gradient
         for param, grad in params:
