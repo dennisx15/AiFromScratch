@@ -113,5 +113,14 @@ python train_mnist.py
 
 ## Status
 
-## Running an example model
-navigate to examples and run train_mnist.py
+#### In progress
+Currently supports training dense neural networks.
+Future plans include:
+
+* Convolutional layers (CNNs)
+* GANs
+* Autograd engine
+* More datasets and benchmarks
+## Motivation
+
+This project is built as part of a deeper exploration into machine learning and AI systems, with the goal of understanding how modern frameworks work under the hood.
