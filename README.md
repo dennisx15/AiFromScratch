@@ -20,3 +20,6 @@ overall good software design principles.
 
 ## Status
 In progress — currently supports training dense layers
+
+- understand Adam
+- create tests for softmax
