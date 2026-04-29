@@ -9,9 +9,6 @@ class Adam(Optimizer):
     """
     def __init__(self, lr=0.001, beta1=0.9, beta2=0.999, eps=1e-8):
         """
-
-        :param params: list of (param, grad)
-        :param lr: learning rate
         :param beta1: controls the momentum for mean
         :param beta2: controls the momentum for variance
         :param eps:
