@@ -49,10 +49,11 @@ class Trainer:
         :param epochs: int
         :param batch_size: int or None
             If None, use full batch.
+        :return: (losses, accuracies)
         """
 
         losses = []
-
+        accuracies = []
         # default: full batch
         if batch_size is None:
             batch_size = X.shape[0]
@@ -83,8 +84,9 @@ class Trainer:
 
             #Logging
             acc = self.accuracy(X, y)
+            accuracies.append(acc)
 
             if epoch % 1 == 0:
                 print(f"Epoch {epoch}: loss = {epoch_loss:.4f}, acc = {acc:.4f}")
 
-        return losses
+        return losses, accuracies
