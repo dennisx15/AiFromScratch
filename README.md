@@ -26,7 +26,7 @@ AiFromScratch/
 │   ├── backend/        # NumPy / CuPy abstraction
 │   ├── layers/         # Dense + activations
 │   ├── losses/         # Loss functions
-│   ├── models/         # Model architectures
+│   ├── models/         # Model metrics and parameters
 │   ├── optimizers/     # SGD, Adam
 │   ├── trainers/       # Training loop
 │
