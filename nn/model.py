@@ -1,3 +1,5 @@
+import numpy as np
+from nn.backend import xp
 class Model:
     """
     Represents a neural network as a sequence of layers.
@@ -23,7 +25,6 @@ class Model:
         return params
 
     def save(self, path):
-        import numpy as np
 
         params = self.parameters()
 
@@ -41,9 +42,10 @@ class Model:
 
         np.savez(path, **data)
 
+    def save_loss_and_acc(self, path, loss, acc):
+        np.savez(path, loss=loss, acc=acc)
+
     def load(self, path):
-        import numpy as np
-        from nn.backend import xp
 
         data = np.load(path)
 
@@ -51,3 +53,13 @@ class Model:
 
         for i, (param, _) in enumerate(params):
             param[:] = xp.array(data[f"param_{i}"])
+
+    def load_loss_and_acc(self, path):
+        """
+        :param path: path to load loss & acc
+        :return: (loss, acc)
+        """
+        data = np.load(path)
+        loss = data["loss"]
+        acc = data["acc"]
+        return loss, acc
