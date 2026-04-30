@@ -5,6 +5,7 @@ from nn.layers.activations import ReLU
 from nn.losses.cross_entropy import CrossEntropyLoss
 from nn.optimizers.adam import Adam
 from nn.trainers.trainer import Trainer
+from nn.data.visualizer import *
 
 from sklearn.datasets import fetch_openml
 
@@ -77,7 +78,7 @@ def main():
     # --------------------
     # Train
     # --------------------
-    trainer.fit(X_train, y_train, epochs=20, batch_size=64)
+    losses, accuracies = trainer.fit(X_train, y_train, epochs=20, batch_size=64)
 
     # --------------------
     # Evaluate
@@ -85,9 +86,10 @@ def main():
     print("Train acc:", accuracy(model, X_train, y_train))
     print("Test acc:", accuracy(model, X_test, y_test))
 
-    # --------------------
-    # Save model
-    # --------------------
+    plot_training(losses, accuracies)
+    plot_confusion_matrix(model, X_test, y_test)
+
+
 
 
 if __name__ == "__main__":
