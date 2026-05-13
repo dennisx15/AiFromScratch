@@ -99,6 +99,22 @@ class Conv2D(Layer):
         :return: The output matrix after forward pass
         """
         assert X.ndim == 4, "Conv2D expects input shape (B, C, H, W)"
+        assert X.shape[1] == self.in_channels, "Input channels do not match"
+
+        #aplly padding
+        if self.padding > 0:
+            X = xp.pad(
+                X,
+                (
+                    (0, 0),  # batch
+                    (0, 0),  # channels
+                    (self.padding, self.padding),
+                    (self.padding, self.padding)
+                )
+            )
+
+        self.input = X
+
         self.input = X
         B, OC, out_h, out_w = self.calculate_output_shape(X)
         output_matrix = xp.zeros((B, OC, out_h, out_w))
@@ -107,9 +123,19 @@ class Conv2D(Layer):
             for out_c in range(OC):
                 for i in range(out_h):
                     for j in range(out_w):
-                        output_matrix[batch, out_c, i, j] = \
-                            xp.sum(X[batch, :, i:i+self.kernel_size, j:j+self.kernel_size] \
-                        * self.W[out_c]) + self.b[out_c]
+                        patch = self.extract_patch(
+                            batch,
+                            i,
+                            j,
+                            X
+                        )
+
+                        output_matrix[batch, out_c, i, j] = (
+                                xp.sum(
+                                    patch * self.W[out_c]
+                                )
+                                + self.b[out_c]
+                        )
         return output_matrix
 
     def backward(self, grad_output):
