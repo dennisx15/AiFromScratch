@@ -3,7 +3,9 @@ from nn.backend import xp
 
 
 class Flatten(Layer):
-
+    """
+    Flatten layer. Used at the end of a convolutional layer to pass it into a dense layer.
+    """
     def forward(self, X):
         """
         Flatten input except batch dimension.
