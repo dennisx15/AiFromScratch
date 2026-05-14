@@ -101,6 +101,8 @@ class Conv2D(Layer):
         assert X.ndim == 4, "Conv2D expects input shape (B, C, H, W)"
         assert X.shape[1] == self.in_channels, "Input channels do not match"
 
+        B, OC, out_h, out_w = self.calculate_output_shape(X)
+
         #aplly padding
         if self.padding > 0:
             X = xp.pad(
@@ -112,11 +114,7 @@ class Conv2D(Layer):
                     (self.padding, self.padding)
                 )
             )
-
         self.input = X
-
-        self.input = X
-        B, OC, out_h, out_w = self.calculate_output_shape(X)
         output_matrix = xp.zeros((B, OC, out_h, out_w))
 
         for batch in range(B):
