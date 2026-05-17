@@ -90,3 +90,4 @@ class Trainer:
                 print(f"Epoch {epoch}: loss = {epoch_loss:.4f}, acc = {acc:.4f}")
 
         return losses, accuracies
+#TODO: separate fit/eval so that dropout is not used when evaluating

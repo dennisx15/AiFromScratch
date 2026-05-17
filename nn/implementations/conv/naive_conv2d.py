@@ -5,6 +5,7 @@ class Naive(ConvImplementation):
 
     def get_patch_bounds(self, i, j, layer):
         """
+        gets the bounds of a patch in a certain step of the convolution
         :param i: row index
         :param j: column index
         :return: the mapping of the inputs the weight interacted with

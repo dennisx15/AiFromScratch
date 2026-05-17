@@ -2,7 +2,13 @@ from .base import Layer
 from nn.backend import xp
 
 class Dropout(Layer):
+    """
+    The dropout layer deactivates a random sample of neurons in a layer during training.
+    """
     def __init__(self, p=0.5):
+        """
+        :param p: The percentage of neurons to deactivate
+        """
         super().__init__()
         self.p = p
         self.mask = None

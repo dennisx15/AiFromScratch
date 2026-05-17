@@ -5,8 +5,9 @@ class CrossEntropyLoss(Loss):
 
     def forward(self, logits, y_true):
         """
-        :param logits: raw outputs (no softmax yet)
+        :param logits: raw outputs/predictions (no softmax yet)
         :param y_true: integer class labels
+        :return: cross entropy loss
         """
 
         # softmax inside loss
