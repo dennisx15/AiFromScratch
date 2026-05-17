@@ -27,8 +27,8 @@ def test_im2col():
         ]
     ])
 
-    print(im2col.im2col(conv2d, X))
-    print(im2col.im2col(conv2d, X).shape)
+    print(im2col._legacy_im2col(conv2d, X))
+    print(im2col._legacy_im2col(conv2d, X))
 
 
 def test_caching():
@@ -56,10 +56,10 @@ def test_caching():
         ]
     ])
 
-    im2col.cache_indeces(conv2d, X)
+    #im2col.cache_indeces(conv2d, X)
     #print(im2col.cache_w)
     #print(im2col.cache_h)
     #print(X[0,:,im2col.cache_h,im2col.cache_w])
-    print(im2col.new_im2col(conv2d, X))
     print(im2col.im2col(conv2d, X))
+    print(im2col._legacy_im2col(conv2d, X))
 

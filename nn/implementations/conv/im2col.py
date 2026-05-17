@@ -10,7 +10,7 @@ class Im2Col(ConvImplementation):
 
     def __init__(self):
         self.cache_h = None #Stores the computed column indeces to reuse over and over
-        self.cache_w = None
+        self.cache_w = None #Stores the computed row indeces to reuse over and over
 
     def cache_indeces(self, layer, out_h, out_w):
         """
@@ -47,7 +47,7 @@ class Im2Col(ConvImplementation):
         self.cache_h = xp.array(all_h)
         self.cache_w = xp.array(all_w)
 
-    def new_im2col(self, layer, X):
+    def im2col(self, layer, X):
 
         assert X.ndim == 4, "Conv2D expects input shape (B, C, H, W)"
         assert X.shape[1] == layer.in_channels, "Input channels do not match"
@@ -91,7 +91,7 @@ class Im2Col(ConvImplementation):
             )
 
             # Matrix multiply against ALL kernels
-            output = flat_patch @ flat_kernel.T
+            output = flat_patch @ flat_kernel.T + layer.b
             #print(output)
             #print(output.shape)
             outputs.append(output)
@@ -115,7 +115,7 @@ class Im2Col(ConvImplementation):
         :param X: input
         :return: the result of forward pass
         """
-        return self.new_im2col(layer, X)
+        return self.im2col(layer, X)
 
     def backward(self, layer, grad_output):
         """
