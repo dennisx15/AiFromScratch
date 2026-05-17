@@ -17,6 +17,13 @@ If you have an nvidia gpu, you can install cupy and set device to "gpu"
 """
 
 def accuracy(model, X, y):
+    """
+    
+    :param model: the model that will make predictions
+    :param X: input
+    :param y: output
+    :return: the overall accuracy of the model
+    """
     logits = model.forward(X)
     preds = xp.argmax(logits, axis=1)
     return (preds == y).mean()

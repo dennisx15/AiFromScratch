@@ -18,6 +18,10 @@ class Model:
             grad = layer.backward(grad)
 
     def parameters(self):
+        """
+        This function is used to retrieve the parameters and gradients used for training
+        :return: List of weights and corresponding gradients and their corresponding gradients
+        """
         params = []
         for layer in self.layers:
             if hasattr(layer, "parameters"):
