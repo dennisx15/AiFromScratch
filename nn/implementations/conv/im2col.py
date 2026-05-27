@@ -12,6 +12,11 @@ class Im2Col(ConvImplementation):
         self.cache_h = None #Stores the computed column indeces to reuse over and over
         self.cache_w = None #Stores the computed row indeces to reuse over and over
 
+        self.input = None
+        self.out_h = None
+        self.out_w = None
+        self.B = None
+
     def cache_indeces(self, layer, out_h, out_w):
         """
         Computes the cache shape to be used in forward passes to improve speed
@@ -52,6 +57,9 @@ class Im2Col(ConvImplementation):
         assert X.ndim == 4, "Conv2D expects input shape (B, C, H, W)"
         assert X.shape[1] == layer.in_channels, "Input channels do not match"
         B, _, out_h, out_w = layer.calculate_output_shape(X)
+        self.B = B
+        self.out_h = out_h
+        self.out_w = out_w
 
         # apply padding
         if layer.padding > 0:
@@ -65,6 +73,7 @@ class Im2Col(ConvImplementation):
                 )
             )
         layer.input = X
+        self.input = X
 
 
         if self.cache_h is None or self.cache_w is None:
@@ -123,8 +132,207 @@ class Im2Col(ConvImplementation):
         :param grad_output: Gradient of the loss with respect to this layer's output.
         :return: Gradient of the loss with respect to the input.
         """
-        naive = Naive()
-        return naive.backward(layer, grad_output)
+
+        return self.col2im(layer, grad_output)
+
+    def compute_dW(self, batch, grad_output, layer):
+        patch = self.input[
+            batch,
+            :,
+            self.cache_h,
+            self.cache_w
+        ] # Create patches
+
+        # Flatten patch
+        flat_patch = patch.reshape(
+            patch.shape[0],
+            -1
+        )
+
+        flat_grad_out = grad_output[
+            batch
+        ].reshape(
+            layer.out_channels,
+            -1
+        )
+
+        # Matrix multiply against ALL kernels
+        output = flat_patch.T @ flat_grad_out.T  # the gradient of the loss with respect to weights
+
+        output = output.T.reshape(
+            layer.out_channels,
+            layer.in_channels,
+            layer.kernel_size,
+            layer.kernel_size
+        )
+
+        return output
+
+    def compute_dW_across_entire_batch(self, grad_output, layer):
+        patch = self.input[
+            :,
+            :,
+            self.cache_h,
+            self.cache_w
+        ] # Create patches
+
+        # Flatten patch
+        flat_patch = patch.reshape(
+            self.B,
+            self.out_h * self.out_w,
+            -1
+        )
+
+        flat_grad_out = grad_output.reshape(
+            self.B,
+            layer.out_channels,
+            -1
+        ).transpose(0, 2, 1)
+
+        output = flat_patch.transpose(0, 2, 1) @ flat_grad_out
+
+        output = xp.sum(output, axis=0)
+        output = output.T.reshape(
+            layer.out_channels,
+            layer.in_channels,
+            layer.kernel_size,
+            layer.kernel_size
+        )
+
+        return output
+
+
+
+
+    def compute_dX(self, layer, grad_output, batch, dX):
+        W_flat = layer.W.reshape(
+            layer.out_channels,
+            -1
+        )
+
+        flat_grad_out = grad_output[
+            batch
+        ].reshape(
+            layer.out_channels,
+            -1
+        )
+
+        dX_cols = flat_grad_out.T @ W_flat
+
+        dX_cols = dX_cols.reshape(
+            self.out_h * self.out_w,
+            layer.in_channels,
+            layer.kernel_size,
+            layer.kernel_size
+        )
+
+        dX_cols = dX_cols.transpose(1, 0, 2, 3)
+
+        xp.add.at(
+            dX[batch],
+            (
+                slice(None),
+                self.cache_h,
+                self.cache_w
+            ),
+            dX_cols
+        )
+
+    def compute_dX_across_entire_batch(self, grad_output, layer):
+        dX = xp.zeros_like(layer.input)
+
+        W_flat = layer.W.reshape(
+            layer.out_channels,
+            -1
+        )
+        flat_grad_out = grad_output.reshape(
+            self.B,
+            layer.out_channels,
+            -1
+        ).transpose(0, 2, 1)
+
+        dX_cols = flat_grad_out @ W_flat
+
+        dX_cols = dX_cols.reshape(
+            self.B,
+            self.out_h * self.out_w,
+            layer.in_channels,
+            layer.kernel_size,
+            layer.kernel_size
+        )
+
+        dX_cols = dX_cols.transpose(0, 2, 1, 3, 4)
+
+        for batch in range(self.B):
+            xp.add.at(
+                dX[batch],
+                (
+                    slice(None),
+                    self.cache_h,
+                    self.cache_w
+                ),
+                dX_cols[batch]
+            )
+
+        if layer.padding > 0:
+            dX = dX[
+                :,
+                :,
+                layer.padding:-layer.padding,
+                layer.padding:-layer.padding
+            ]
+
+
+        return dX
+
+
+
+    def col2im(self, layer, grad_output):
+        """
+        performs backward pass using col2im
+        :param layer: the convolutional neural network itself is passed into here
+        :param grad_output: the gradient of the loss with respect to this layer's output.
+        :return: gradient of the loss with respect to the input.
+        """
+
+        #assert self.cache_h and self.cache_w, "Can't do backward pass without performing a forward pass first"
+
+        #dX = xp.zeros_like(layer.input)
+
+        dW = self.compute_dW_across_entire_batch(grad_output, layer)
+
+        layer.dW += dW
+        # layer.db += xp.sum(
+        #     grad_output[batch],
+        #     axis=(1, 2)
+        # )
+
+        layer.db += xp.sum(
+             grad_output,
+             axis=(0, 2, 3)
+         ) #vectorize across batch
+
+        # for batch in range(self.B):
+        #
+        #
+        #
+        #
+        #     self.compute_dX(layer, grad_output, batch, dX)
+
+        # if layer.padding > 0:
+        #     dX = dX[
+        #         :,
+        #         :,
+        #         layer.padding:-layer.padding,
+        #         layer.padding:-layer.padding
+        #     ]
+        #
+        #
+        # return dX
+
+        return self.compute_dX_across_entire_batch(grad_output, layer)
+
+
 
 # ============================================================
 # Legacy / Reference Implementations
